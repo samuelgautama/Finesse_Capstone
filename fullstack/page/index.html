@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Finesse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: LOGIN
+══════════════════════════════════════ -->
+<div id="screen-login" class="screen auth-screen active">
+  <div class="auth-left">
+    <div class="auth-logo">Finesse</div>
+    <p class="auth-tagline">Ubah cara hematmu jadi game seru bersama ribuan mahasiswa!</p>
+    <div class="auth-pills">
+      <span class="auth-pill"><i class="ti ti-brain"></i> AI K-Means</span>
+      <span class="auth-pill"><i class="ti ti-trophy"></i> Liga &amp; EXP</span>
+      <span class="auth-pill"><i class="ti ti-shield"></i> Misi Adaptif</span>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form">
+      <h2>Selamat datang!</h2>
+      <p>Buat akun dan mulai petualangan finansialmu.</p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="budi@email.com" id="login-email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" placeholder="Min. 8 karakter" id="login-pass"/>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="goTo('screen-setup')">Buat Akun</button>
+      <div class="auth-switch">Sudah punya akun? <a onclick="goTo('screen-setup')">Masuk</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: SETUP BUDGET
+══════════════════════════════════════ -->
+<div id="screen-setup" class="screen setup-screen">
+  <div class="setup-card">
+    <div class="setup-icon"><i class="ti ti-target"></i></div>
+    <h2>Atur budget bulananmu</h2>
+    <p>Angka ini dipakai AI kami untuk menentukan ligamu secara otomatis dan memberikan misi yang tepat untukmu.</p>
+    <div class="budget-input-wrap">
+      <span class="budget-prefix">Rp</span>
+      <input class="budget-input" type="text" id="budget-val" value="2.000.000" title="Budget bulanan" placeholder="2.000.000" oninput="formatBudget(this)"/>
+    </div>
+    <p class="setup-hint">Kamu bisa mengubah ini kapan saja di pengaturan profil.</p>
+    <button class="btn btn-primary btn-block" onclick="startAdventure()" style="padding:13px;">
+      <i class="ti ti-rocket"></i> Mulai Petualangan!
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div id="screen-app" class="screen app-layout">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">Finesse</div>
+    <div class="sidebar-user">
+      <div class="avatar">B</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-name">Budi Santoso</div>
+        <div class="sidebar-user-level" id="sidebar-user-level">Level 7 · Liga Silver</div>
+      </div>
+    </div>
+    <nav class="nav-section">
+      <div class="nav-item active" onclick="showPage('dashboard', this)"><i class="ti ti-home"></i> Dashboard</div>
+      <div class="nav-item" onclick="showPage('misi', this)"><i class="ti ti-shield"></i> Misi</div>
+      <div class="nav-item" onclick="showPage('arena', this)"><i class="ti ti-trophy"></i> Arena</div>
+      <div class="nav-item" onclick="showPage('profil', this)"><i class="ti ti-user"></i> Profil</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="sidebar-catat-btn" onclick="openModal('modal-transaksi')">
+        <i class="ti ti-plus"></i> Catat Transaksi
+      </button>
+      <div class="nav-logout" onclick="goTo('screen-login')"><i class="ti ti-logout"></i> Logout</div>
+    </div>
+  </aside>
+
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <button type="button" class="hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar" title="Toggle sidebar"><i class="ti ti-menu-2" aria-hidden="true"></i></button>
+    <div class="mobile-header-logo">Finesse</div>
+    <div class="avatar avatar-sm">B</div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ── DASHBOARD ── -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Senin, 19 Mei 2026</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-transaksi')" style="display:none;" id="desk-catat">
+          <i class="ti ti-plus"></i> Catat
+        </button>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Sisa Budget</div>
+          <div class="metric-val" style="color:var(--teal);" id="sisa-budget">Rp 500rb</div>
+          <div class="progress-bar"><div class="progress-fill" id="budget-progress" style="width:25%;"></div></div>
+          <div class="metric-sub" id="budget-sub">Rp 1,5jt terpakai dari Rp 2jt</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Level &amp; EXP</div>
+          <div class="metric-val" id="dashboard-exp-level">Level 7</div>
+          <div class="progress-bar"><div class="progress-fill" id="dashboard-exp-progress" style="width:62%; background:var(--brand);"></div></div>
+          <div class="metric-sub" id="dashboard-exp-text">1.240 EXP</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Liga Saat Ini</div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+            <div class="metric-val" style="font-size:20px;" id="dashboard-liga-name">Silver</div>
+            <span class="tier-badge tier-silver" id="dashboard-liga-badge"><i class="ti ti-medal"></i> Tier 2</span>
+          </div>
+          <div class="metric-sub" id="dashboard-rank-text">Peringkat #12 dari 100</div>
+        </div>
+      </div>
+
+      <!-- Dash Grid -->
+      <div class="dash-grid">
+        <!-- Left -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="avatar-section">
+              <div class="avatar-big">★<div class="avatar-level-badge" id="avatar-level-badge">7</div></div>
+              <div class="avatar-info">
+                <h3 id="avatar-title">Penabung Handal</h3>
+                <p id="avatar-subtitle">Ayo mulai mencatat transaksi agar Finesse semakin pintar.</p>
+                <div class="chips-row">
+                  <span class="chip chip-teal" id="avatar-last-exp">+0 EXP terakhir</span>
+                  <span class="chip chip-brand" id="avatar-league-percent">Top 0% Liga</span>
+                  <span class="chip chip-gray" id="avatar-tx-count">0 Transaksi</span>
+                </div>
+              </div>
+            </div>
+            <div class="divider" style="margin:8px 0 14px;"></div>
+            <div class="section-title"><i class="ti ti-chart-bar" style="font-size:15px;"></i> Pengeluaran per kategori</div>
+            <div class="bar-chart" id="bar-chart">
+              <div class="bar-wrap"><div class="bar" style="height:48px;"></div><div class="bar-label">Makan</div></div>
+              <div class="bar-wrap"><div class="bar hi" style="height:78px;"></div><div class="bar-label">Hiburan</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:30px;"></div><div class="bar-label">Transport</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:42px;"></div><div class="bar-label">Belanja</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:18px;"></div><div class="bar-label">Lainnya</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title"><i class="ti ti-clock" style="font-size:15px;"></i> Transaksi terakhir</div>
+            <div class="tx-list" id="tx-list">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="section-title"><i class="ti ti-shield" style="font-size:15px;"></i> Misi aktif</div>
+            <div style="display:flex;flex-direction:column;gap:10px;" id="mini-quest-list">
+              <!-- filled by JS -->
+            </div>
+            <button class="btn btn-outline" style="width:100%;margin-top:12px;" onclick="showPage('misi', null)">Lihat semua misi</button>
+          </div>
+
+          <div class="card">
+            <div class="section-title"><i class="ti ti-trophy" style="font-size:15px;"></i> Peringkat liga silver</div>
+            <div class="rank-list" id="mini-rank-list">
+              <!-- filled by JS -->
+            </div>
+            <button class="btn btn-outline" style="width:100%;margin-top:12px;" onclick="showPage('arena', null)">Lihat leaderboard penuh</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MISI ── -->
+    <div id="page-misi" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Quest Board</div>
+          <div class="page-sub">Misi adaptif harian berdasarkan analisis AI</div>
+        </div>
+      </div>
+
+      <!-- Token & Generate Card -->
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:44px;height:44px;background:var(--brand-light);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ti ti-sparkles" style="font-size:22px;color:var(--brand);"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;color:var(--gray-800);">Generate Misi AI</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px;" id="token-status-text">Mengecek token...</div>
+          </div>
+          <div id="token-badge" style="display:none;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;"></div>
+        </div>
+        <div style="font-size:12px;color:var(--gray-500);margin-bottom:14px;line-height:1.6;">
+          AI akan menganalisis pola transaksimu dan membuat <strong>3 misi</strong> yang dipersonalisasi. Token akan reset setiap <strong>00:00 tengah malam</strong>.
+        </div>
+        <button id="btn-generate-misi" class="btn btn-primary" style="width:100%;" onclick="generateMisi()">
+          <i class="ti ti-wand"></i> Minta Misi Baru (1 Token)
+        </button>
+      </div>
+
+      <!-- Info Banner -->
+      <div id="quest-info-banner" style="background:var(--brand-light);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;border:1px solid #C7D2FE;">
+        <i class="ti ti-info-circle" style="font-size:20px;color:var(--brand);flex-shrink:0;"></i>
+        <div style="font-size:12px;color:var(--brand);line-height:1.6;">
+          Tekan <strong>"Selesaikan"</strong> pada misi untuk diverifikasi sistem. Jika kondisi terpenuhi, EXP langsung masuk ke akunmu!
+        </div>
+      </div>
+
+      <div class="quest-list" id="quest-list-full">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- ── ARENA ── -->
+    <div id="page-arena" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Arena</div>
+          <div class="page-sub" id="arena-page-sub">Persaingan sesama Liga Silver — EXP terbanyak bulan ini</div>
+        </div>
+        <span class="tier-badge tier-silver" id="arena-liga-badge" style="font-size:12px;padding:6px 14px;"><i class="ti ti-medal"></i> Liga Silver</span>
+      </div>
+      <div class="card" style="margin-bottom:16px;" id="arena-user-card">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--brand-light);border-radius:var(--radius-sm);">
+          <div class="avatar">B</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:var(--brand);">Posisimu saat ini: #12 dari 100</div>
+            <div style="font-size:11px;color:#6366F1;margin-top:2px;">1.240 EXP · butuh 360 EXP lagi untuk masuk top 10</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="rank-list" id="rank-list-full">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFIL ── -->
+    <div id="page-profil" class="page">
+      <div class="page-header">
+        <div class="page-title">Profil</div>
+      </div>
+      <div class="profile-grid">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card" style="text-align:center;">
+            <div class="avatar avatar-lg" style="margin:0 auto 12px;width:64px;height:64px;font-size:26px;" id="profil-avatar">B</div>
+            <div style="font-family:var(--font-display);font-size:20px;font-weight:700;" id="profil-nama">Budi Santoso</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:4px;">budi@email.com</div>
+            <div style="display:flex;justify-content:center;gap:8px;margin:12px 0;">
+              <span class="tier-badge tier-silver" id="profil-liga-badge"><i class="ti ti-medal"></i> Silver</span>
+              <span class="chip chip-brand">Level 7</span>
+            </div>
+            <button class="btn btn-outline btn-block" style="font-size:12px;" onclick="openEditProfil()"><i class="ti ti-edit"></i> Edit Profil</button>
+          </div>
+          <div class="card">
+            <div class="section-title">Statistik</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Total EXP dikumpulkan</span><span style="font-weight:600;">8.420</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Misi diselesaikan</span><span style="font-weight:600;">23</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Transaksi tercatat</span><span style="font-weight:600;">184</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--gray-500);">Bulan aktif</span><span style="font-weight:600;">5 bulan</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="section-title"><i class="ti ti-badge" style="font-size:15px;"></i> Lencana permanen</div>
+            <div class="badge-grid">
+              <span class="badge-item badge-gold">🥇 Gold Saver · Apr 2026</span>
+              <span class="badge-item badge-silver">🥈 Silver · Mar 2026</span>
+              <span class="badge-item badge-silver">🥈 Silver · Feb 2026</span>
+              <span class="badge-item badge-iron">Iron · Jan 2026</span>
+              <span class="badge-item badge-iron">Iron · Des 2025</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title"><i class="ti ti-chart-bar" style="font-size:15px;"></i> Riwayat pengeluaran bulanan</div>
+            <div class="bar-chart">
+              <div class="bar-wrap"><div class="bar" style="height:52px;"></div><div class="bar-label">Jan</div></div>
+              <div class="bar-wrap"><div class="bar hi" style="height:78px;"></div><div class="bar-label">Feb</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:40px;"></div><div class="bar-label">Mar</div></div>
+              <div class="bar-wrap"><div class="bar hi" style="height:64px;"></div><div class="bar-label">Apr</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:30px;"></div><div class="bar-label">Mei</div></div>
+            </div>
+            <div style="font-size:10px;color:var(--gray-400);margin-top:6px;">Ungu tua = bulan di atas rata-rata pengeluaran</div>
+          </div>
+          <div class="card">
+            <div class="section-title"><i class="ti ti-settings" style="font-size:15px;"></i> Pengaturan</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;">
+                <span>Budget bulanan</span><span style="font-weight:600;color:var(--brand);" id="profil-budget">Rp 2.000.000</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;">
+                <span>Notifikasi</span><span style="font-size:11px;background:var(--teal-light);color:var(--teal);padding:2px 8px;border-radius:10px;font-weight:500;">Aktif</span>
+              </div>
+              <div style="padding:10px 0;">
+                <button class="btn btn-block" style="background:var(--red-light);color:var(--red);border:1px solid #FECACA;font-size:12px;" onclick="goTo('screen-login')"><i class="ti ti-logout"></i> Logout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <div class="mobile-nav-item active" id="mnav-dashboard" onclick="showPage('dashboard', null); setMobileNav('dashboard')">
+        <i class="ti ti-home"></i><span>Home</span>
+      </div>
+      <div class="mobile-nav-item" id="mnav-misi" onclick="showPage('misi', null); setMobileNav('misi')">
+        <i class="ti ti-shield"></i><span>Misi</span>
+      </div>
+      <div class="mobile-nav-item" id="mnav-arena" onclick="showPage('arena', null); setMobileNav('arena')">
+        <i class="ti ti-trophy"></i><span>Arena</span>
+      </div>
+      <div class="mobile-nav-item" id="mnav-profil" onclick="showPage('profil', null); setMobileNav('profil')">
+        <i class="ti ti-user"></i><span>Profil</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile FAB -->
+  <button type="button" class="mobile-fab" onclick="openModal('modal-transaksi')" title="Catat Pengeluaran"><i class="ti ti-plus"></i></button>
+
+</div><!-- end screen-app -->
+
+<!-- ══════════════════════════════════════
+     MODALS
+══════════════════════════════════════ -->
+
+<!-- Modal: Input Transaksi -->
+<div id="modal-transaksi" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Catat Pengeluaran</div>
+      <button type="button" class="modal-close" onclick="closeModal('modal-transaksi')" title="Tutup"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nominal (Rp)</label>
+      <input class="form-input" type="number" id="tx-nominal" placeholder="25000" style="font-size:16px;font-weight:600;"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="tx-kategori">Kategori</label>
+      <div style="position:relative;">
+        <select class="form-select" id="tx-kategori" title="Kategori">
+          <option value="Makan &amp; Minum">🍜 Makan &amp; Minum</option>
+          <option value="Transportasi">🚗 Transportasi</option>
+          <option value="Hiburan &amp; Nongkrong">🎮 Hiburan &amp; Nongkrong</option>
+          <option value="Kebutuhan Kuliah">📚 Kebutuhan Kuliah</option>
+          <option value="Tagihan &amp; Kos">🏠 Tagihan &amp; Kos</option>
+        </select>
+        <i class="ti ti-chevron-down" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);pointer-events:none;"></i>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="tx-payment">Metode Pembayaran</label>
+      <div style="display:flex;gap:8px;">
+        <label style="flex:1;cursor:pointer;">
+          <input type="radio" name="payment_method" id="pm-cash" value="Cash" checked style="display:none;">
+          <div class="payment-option" id="po-cash" style="border:2px solid var(--brand);background:var(--brand-light);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12px;font-weight:600;color:var(--brand);">
+            💵 Cash
+          </div>
+        </label>
+        <label style="flex:1;cursor:pointer;">
+          <input type="radio" name="payment_method" id="pm-ewallet" value="E-Wallet" style="display:none;">
+          <div class="payment-option" id="po-ewallet" style="border:2px solid var(--gray-200);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12px;font-weight:600;color:var(--gray-500);">
+            📱 E-Wallet
+          </div>
+        </label>
+        <label style="flex:1;cursor:pointer;">
+          <input type="radio" name="payment_method" id="pm-card" value="Credit Card" style="display:none;">
+          <div class="payment-option" id="po-card" style="border:2px solid var(--gray-200);border-radius:var(--radius-sm);padding:10px;text-align:center;font-size:12px;font-weight:600;color:var(--gray-500);">
+            💳 Kartu
+          </div>
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan (opsional)</label>
+      <input class="form-input" type="text" id="tx-catatan" placeholder="Makan siang warteg..."/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="tx-tanggal">Tanggal</label>
+      <input class="form-input" type="date" id="tx-tanggal" title="Tanggal"/>
+    </div>
+    <button class="btn btn-teal btn-block" style="padding:12px;" onclick="simpanTransaksi()">
+      <i class="ti ti-check"></i> Simpan Transaksi
+    </button>
+  </div>
+</div>
+
+<!-- Modal: Edit Profil -->
+<div id="modal-edit-profil" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Profil</div>
+      <button type="button" class="modal-close" onclick="closeModal('modal-edit-profil')" aria-label="Close modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="edit-nama">Nama</label>
+      <input class="form-input" id="edit-nama" type="text" placeholder="Nama kamu" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="edit-budget">Budget bulanan</label>
+      <input class="form-input" id="edit-budget" type="text" placeholder="2000000" oninput="formatBudget(this)" />
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-primary btn-block" style="flex:1;" onclick="simpanProfil()">Simpan</button>
+      <button class="btn btn-outline btn-block" style="flex:1;" onclick="closeModal('modal-edit-profil')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Profil Pemain -->
+<div id="modal-profil-pemain" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Profil Pemain</div>
+      <button type="button" class="modal-close" onclick="closeModal('modal-profil-pemain')" aria-label="Close modal"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="popup-profile">
+      <div class="avatar-big" id="pp-avatar" style="margin:0 auto 12px;">A</div>
+      <h3 id="pp-name">Andi Kurnia</h3>
+      <p id="pp-level">Level 9 · 4.200 EXP</p>
+      <div class="divider"></div>
+      <div class="badge-grid" style="justify-content:center;" id="pp-badges"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Detail & Selesaikan Misi -->
+<div id="modal-misi-detail" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="md-title">Detail Misi</div>
+      <button type="button" class="modal-close" onclick="closeModal('modal-misi-detail')" aria-label="Close modal"><i class="ti ti-x"></i></button>
+    </div>
+
+    <!-- Badge difficulty -->
+    <div style="margin-bottom:12px;" id="md-difficulty-badge"></div>
+
+    <!-- Alasan AI -->
+    <div style="background:var(--brand-light);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;font-size:13px;color:var(--brand);line-height:1.6;" id="md-alasan"></div>
+
+    <!-- Deskripsi -->
+    <div style="font-size:13px;color:var(--gray-600);margin-bottom:12px;line-height:1.6;" id="md-desc"></div>
+
+
+    <!-- Progress bar -->
+    <div class="progress-bar" style="height:10px;margin-bottom:6px;"><div class="progress-fill" id="md-progress" style="width:0%;"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-400);margin-bottom:16px;">
+      <span id="md-prog-label">Belum diverifikasi</span>
+      <span id="md-reward" style="color:var(--brand);font-weight:600;">+500 EXP</span>
+    </div>
+
+    <!-- Tombol aksi -->
+    <div id="md-action"></div>
+
+    <!-- Konfirmasi checklist (muncul setelah klik "Sudah Selesai") -->
+    <div id="md-konfirmasi" style="display:none;margin-top:14px;background:var(--gray-50);border-radius:var(--radius-sm);border:1px solid var(--gray-200);padding:14px;">
+      <div style="font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:12px;">✅ Konfirmasi Penyelesaian</div>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:10px;">
+        <input type="checkbox" id="chk-konfirmasi-1" style="margin-top:2px;width:16px;height:16px;accent-color:var(--brand);flex-shrink:0;">
+        <span style="font-size:12px;color:var(--gray-600);line-height:1.5;">Saya sudah menyelesaikan misi ini sesuai ketentuan yang diberikan.</span>
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:14px;">
+        <input type="checkbox" id="chk-konfirmasi-2" style="margin-top:2px;width:16px;height:16px;accent-color:var(--brand);flex-shrink:0;">
+        <span style="font-size:12px;color:var(--gray-600);line-height:1.5;">Saya mengerti bahwa sistem akan memverifikasi transaksi saya secara otomatis.</span>
+      </label>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" id="btn-konfirmasi-submit" style="flex:1;font-size:13px;" onclick="submitSelesaikanMisi()" disabled>
+          <i class="ti ti-check"></i> Verifikasi Sekarang
+        </button>
+        <button class="btn btn-outline" style="flex:1;font-size:13px;" onclick="batalKonfirmasi()">
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Hasil Verifikasi -->
+<div id="modal-hasil-verifikasi" class="modal-overlay">
+  <div class="modal" style="text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;" id="hasil-icon">⭐</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;" id="hasil-title">Misi Selesai!</div>
+    <div style="font-size:13px;color:var(--gray-600);margin-bottom:16px;line-height:1.6;" id="hasil-detail"></div>
+    <div style="font-size:28px;font-weight:800;color:var(--brand);margin-bottom:20px;" id="hasil-exp"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="closeModal('modal-hasil-verifikasi');closeModal('modal-misi-detail')">Lanjutkan</button>
+  </div>
+</div>
+
+<!-- EXP Popup -->
+<div class="exp-popup" id="exp-popup">
+  <div class="exp-popup-icon">⭐</div>
+  <div class="exp-popup-val" id="exp-popup-val">+15 EXP</div>
+  <div class="exp-popup-desc">Transaksi berhasil dicatat!</div>
+  <button class="btn btn-primary" style="margin-top:16px;" onclick="closeExpPopup()">Lanjutkan</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">✅</div>
+  <div class="toast-text">
+    <div class="toast-title" id="toast-title">Berhasil!</div>
+    <div class="toast-desc" id="toast-desc"></div>
+  </div>
+</div>
+
+
+<script src="app.js"></script>
+</body>
+</html>
