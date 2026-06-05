@@ -1,0 +1,12 @@
+# Environments
+.env
+venv/
+dl-env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs and Checkpoints
+logs/
+.ipynb_checkpoints/

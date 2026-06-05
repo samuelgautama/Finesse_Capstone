@@ -1,0 +1,33 @@
+📁 Struktur Folder AI Finesse
+1. File Workspace Rayza (Misal: train_kmeans.ipynb atau train_kmeans.py)
+
+Fokus: Area kerjamu secara eksklusif.
+
+Isi Kode: Proses load data transaksi, scaling data, menjalankan algoritma Elbow Method, melatih model K-Means dengan 4 Liga (Iron, Bronze, Silver, Gold), dan melihat rata-rata profil pengeluaran tiap liga.
+
+Output Akhir: Mengekspor model K-Means yang sudah pintar dan objek Scaler-nya ke dalam file (misalnya kmeans_model.pkl dan scaler.pkl).
+
+2. File Workspace Samuel (Misal: train_dnn.ipynb atau train_dnn.py)
+
+Fokus: Area kerja eksklusif Samuel.
+
+Isi Kode: Menyiapkan arsitektur TensorFlow Functional API, menyuntikkan Custom Loss Function dan Callback (Early Stopping), serta melatih jaringan saraf tiruan menggunakan target financial_health_score.
+
+Output Akhir: Mengekspor model prediktor ke dalam format produksi, yaitu dnn_model.keras.
+
+3. File Penghubung / Utilitas (Misal: data_utils.py) Opsional tapi sangat disarankan
+
+Isi Kode: Fungsi-fungsi kecil yang dipakai berulang kali oleh kamu dan Samuel. Misalnya, fungsi untuk merapikan teks JSON atau memotong kolom dataset. Dengan memisahkan ini, kode training kalian jadi jauh lebih bersih.
+
+4. File Produksi (Misal: inference_engine.py)
+
+Fokus: "Mesin" utama yang akan berjalan saat web aplikasi Finesse live. Ini dikerjakan bersama di Minggu ke-4.
+
+Isi Kode: File ini tidak lagi melakukan training. Tugasnya hanya memuat (load) kmeans_model.pkl milikmu dan dnn_model.keras milik Samuel.
+
+Cara Kerjanya: Saat backend Node.js menerima transaksi baru dari pengguna di website, Node.js akan memanggil inference_engine.py ini. File ini akan mengambil data transaksi, memasukkannya ke model Samuel untuk menghasilkan skor (EXP), memasukkannya ke modelmu untuk menghasilkan misi adaptif, lalu mengembalikan kedua hasilnya ke Node.js dalam format JSON.
+
+Kenapa dibagi seperti ini?
+Kerja Paralel: Kamu bisa fokus mengotak-atik logika Misi dan Liga di file-mu sendiri, sementara Samuel bisa eksperimen berjam-jam dengan layer TensorFlow di file-nya, tanpa perlu saling menunggu atau merusak kode satu sama lain.
+
+Ringan: File inference_engine.py nanti akan sangat ringan karena isinya cuma perintah predict, bukan perintah training yang memakan banyak memori komputer.
